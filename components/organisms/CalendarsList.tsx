@@ -5,6 +5,7 @@ import { useState, createContext } from 'react'
 import Modal from '../../ui/modal/Modal'
 import { DisplayTask } from '../atoms/DisplayTask'
 import { Contents } from '../../ui/modal/contents/Contents'
+import { Period } from '@/contexts/YearMonthContext'
 
 export type ScheduledTodo = {
   id: number
@@ -60,8 +61,10 @@ export type ModalType = 'create' | 'read' | undefined
 
 const CalendarsList = ({
   calendarDays,
+  calendarType 
 }: {
   calendarDays: CalendarDaysProp
+  calendarType: Period 
 }) => {
   const [TodoModalOpen, setIsTodoModalOpen] = useState<boolean>(false)
   const [scheduledLists, setScheduledLists] = useState<ScheduledTodo[] | null>(

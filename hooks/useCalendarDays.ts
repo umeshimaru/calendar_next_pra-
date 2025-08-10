@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { getDaysInMonth } from 'date-fns'
+import { getDaysInMonth, startOfWeek, addDays } from 'date-fns'
 import { YearMonthContextProvider } from '../contexts/YearMonthContext'
 
 export type CalendarDataProps = {
@@ -14,7 +14,24 @@ export function useCalendarDays() {
     throw new Error('コンテキストエラー')
   }
 
-  const { defaultYear, defaultMonth } = context
+  const { defaultYear, defaultMonth, period } = context
+
+  if (period === 'week') {
+    const currentDate = new Date(defaultYear, defaultMonth - 1)
+    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }) 
+    const weekDays = Array.from({ length: 7 }, (_, i) => 
+      addDays(weekStart, i).getDate()
+    )
+    
+    const weeklyDates: CalendarDataProps = {
+      thisYear: defaultYear,
+      thisMonth: defaultMonth,
+      calendarDates: weekDays,
+    }
+    return weeklyDates
+  }
+
+
   const calendarLastDay = getDaysInMonth(
     new Date(defaultYear, defaultMonth - 1)
   )
@@ -28,10 +45,14 @@ export function useCalendarDays() {
     calendarDates.push(day)
   })
 
-  const calendarData: CalendarDataProps = {
+  const  monthlyDates: CalendarDataProps = {
     thisYear: defaultYear,
     thisMonth: defaultMonth,
     calendarDates: calendarDates,
   }
-  return calendarData
+  return monthlyDates
 }
+
+
+
+

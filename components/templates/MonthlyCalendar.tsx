@@ -13,7 +13,7 @@ const MonthlyCalendar = () => {
 
   return (
     <div>
-      <CalendarsList calendarDays={calendarDates} />
+      <CalendarsList calendarDays={calendarDates}  calendarType="month" />
     </div>
   )
 }
