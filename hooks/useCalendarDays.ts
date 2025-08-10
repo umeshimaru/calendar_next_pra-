@@ -17,15 +17,16 @@ export function useCalendarDays() {
   const { defaultYear, defaultMonth, period } = context
 
   if (period === 'week') {
-    const currentDate = new Date(defaultYear, defaultMonth - 1)
-    const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 }) 
-    const weekDays = Array.from({ length: 7 }, (_, i) => 
-      addDays(weekStart, i).getDate()
-    )
+    const today = new Date()
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 })
+    const weekDays = Array.from({ length: 7 }, (_, i) => {
+      const currentDay = addDays(weekStart, i)
+      return currentDay.getDate()
+    })
     
     const weeklyDates: CalendarDataProps = {
-      thisYear: defaultYear,
-      thisMonth: defaultMonth,
+      thisYear: weekStart.getFullYear(),
+      thisMonth: weekStart.getMonth() + 1,
       calendarDates: weekDays,
     }
     return weeklyDates
