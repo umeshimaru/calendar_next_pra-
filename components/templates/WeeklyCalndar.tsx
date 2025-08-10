@@ -12,16 +12,13 @@ type WeeklyCalendarProps = {
 const WeeklyCalendar = ({ scheduledLists, setScheduledLists }: WeeklyCalendarProps) => {
      const { calendarDates }: { calendarDates: CalendarDatesProp } =  useCalendarDays()
   return (
-    <div>
-      <div>週間です</div>
-      {/* ここに週次カレンダーのコンテンツを追加 */}
-     <CalendarsList 
-       calendarDays={calendarDates} 
-       calendarType="week" 
-       scheduledLists={scheduledLists}
-       setScheduledLists={setScheduledLists}
-     />
-      {/* 例: 日付ごとのイベントリストなど */}
+    <div className="ml-[200px]">
+      <CalendarsList 
+        calendarDays={calendarDates} 
+        calendarType="week" 
+        scheduledLists={scheduledLists}
+        setScheduledLists={setScheduledLists}
+      />
     </div>
   );
 }

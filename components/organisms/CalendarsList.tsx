@@ -1,7 +1,7 @@
 'use client'
 
 import { CalendarDataProps } from '../../hooks/useCalendarDays'
-import { useState, createContext } from 'react'
+import { useState, createContext, useEffect } from 'react'
 import Modal from '../../ui/modal/Modal'
 import { DisplayTask } from '../atoms/DisplayTask'
 import { Contents } from '../../ui/modal/contents/Contents'
@@ -78,7 +78,52 @@ const CalendarsList = ({
 
   console.log(scheduledLists)
 
-  const openModal = (day: Day) => {
+  const [modalPosition, setModalPosition] = useState<{x: number, y: number} | null>(null)
+
+  useEffect(() => {
+    const handleCloseModal = () => {
+      setIsTodoModalOpen(false)
+    }
+
+    window.addEventListener('closeModal', handleCloseModal)
+    return () => {
+      window.removeEventListener('closeModal', handleCloseModal)
+    }
+  }, [])
+
+  const openModal = (day: Day, event: React.MouseEvent) => {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+    const modalWidth = 320 // w-80 = 20rem = 320px
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
+    
+    // 基本的にクリックした日付の左に配置
+    let x = rect.left - modalWidth - 10
+    
+    // 左に配置して画面外にはみ出る場合は右に配置
+    if (x < 10) {
+      x = rect.right + 10
+    }
+    
+    // それでも右にはみ出る場合は画面内に収める
+    if (x + modalWidth > windowWidth - 10) {
+      x = windowWidth - modalWidth - 10
+    }
+    
+    // Y座標も画面内に収める
+    let y = rect.top
+    const modalMaxHeight = windowHeight * 0.6 // max-h-[60vh]
+    if (y + modalMaxHeight > windowHeight - 10) {
+      y = windowHeight - modalMaxHeight - 10
+    }
+    if (y < 10) {
+      y = 10
+    }
+    
+    setModalPosition({
+      x: x,
+      y: y
+    })
     setIsTodoModalOpen(true)
     setType('create')
     setClickedDay(day)
@@ -105,24 +150,81 @@ const CalendarsList = ({
         <EditContext.Provider
           value={{ todoId, scheduledLists, setScheduledLists,setIsTodoModalOpen }}
         >
-          {calendarDays.map((day: Day) => (
-            <div key={day} onClick={() => openModal(day)}>
-              <div>{day}</div>
-              {scheduledLists?.map(
-                (scheduledList: ScheduledTodo, index: number) => (
-                  <div key={`${scheduledList.todo}+${index}`} className="task">
-                    <button onClick={() => openModal(day)}>
-                      <div>
-                        <DisplayTask day={day} scheduledList={scheduledList} />
-                      </div>
-                    </button>
-                  </div>
-                )
+          <div className="w-full">
+            <div className={calendarType === 'month' ? 
+              'grid grid-cols-7 gap-0 border border-gray-300 bg-white' : 
+              'flex flex-col bg-white border border-gray-300'
+            }>
+              {calendarType === 'month' && (
+                <div className="col-span-7 grid grid-cols-7 gap-0 bg-gray-50 border-b border-gray-300">
+                  {weeks.map(week => (
+                    <div key={week} className="py-3 px-4 text-center text-sm font-medium text-gray-600 border-r border-gray-300 last:border-r-0">{week}</div>
+                  ))}
+                </div>
               )}
+              
+              {calendarType === 'week' && (
+                <>
+                  <div className="grid grid-cols-8 gap-0 border-b border-gray-300">
+                    <div className="p-3 text-center text-xs text-gray-500 border-r border-gray-300"></div>
+                    {weeks.map(week => (
+                      <div key={week} className="p-3 text-center text-sm font-medium text-gray-600 border-r border-gray-300 last:border-r-0">{week}</div>
+                    ))}
+                  </div>
+                  
+                  <div className="grid grid-cols-8 gap-0 border-b border-gray-300">
+                    <div className="p-3 text-center text-xs text-gray-500 border-r border-gray-300">GMT-04</div>
+                    {calendarDays.map((day: Day) => (
+                      <div key={day} className="p-3 text-center text-lg font-normal text-gray-800 border-r border-gray-300 last:border-r-0 cursor-pointer hover:bg-gray-50" onClick={(event) => openModal(day, event)}>
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {Array.from({ length: 24 }).map((_, hour) => (
+                    <div key={hour} className="grid grid-cols-8 gap-0 border-b border-gray-200 min-h-[40px]">
+                      <div className="p-2 text-xs text-gray-500 border-r border-gray-300 text-right">
+                        {hour === 0 ? '午前12時' : hour < 12 ? `午前${hour}時` : hour === 12 ? '午後12時' : `午後${hour - 12}時`}
+                      </div>
+                      {calendarDays.map((day: Day) => (
+                        <div key={`${day}-${hour}`} className="border-r border-gray-300 last:border-r-0 cursor-pointer hover:bg-gray-50 relative" onClick={(event) => openModal(day, event)}>
+                          {scheduledLists?.map(
+                            (scheduledList: ScheduledTodo, index: number) => {
+                              const taskDate = new Date(scheduledList.startDate).getDate()
+                              return taskDate === day && hour === 9 ? (
+                                <div key={`${scheduledList.todo}+${index}`} className="absolute inset-x-1 top-1 bg-green-600 text-white px-2 py-1 rounded text-xs overflow-hidden text-ellipsis whitespace-nowrap hover:bg-green-700">
+                                  <DisplayTask day={day} scheduledList={scheduledList} />
+                                </div>
+                              ) : null
+                            }
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </>
+              )}
+              
+              {calendarType === 'month' && calendarDays.map((day: Day, dayIndex: number) => (
+                <div key={day} className={`bg-white cursor-pointer p-3 flex flex-col min-h-[120px] transition-colors hover:bg-gray-50 border-r border-b border-gray-300 ${dayIndex % 7 === 6 ? 'border-r-0' : ''}`} onClick={(event) => openModal(day, event)}>
+                  <div className="text-sm font-normal text-gray-800 mb-2">{day}</div>
+                  <div className="flex-1 flex flex-col gap-1">
+                    {scheduledLists?.map(
+                      (scheduledList: ScheduledTodo, index: number) => (
+                        <div key={`${scheduledList.todo}+${index}`} className="w-full">
+                          <div className="w-full cursor-pointer bg-green-600 text-white px-2 py-1 rounded text-xs leading-4 overflow-hidden text-ellipsis whitespace-nowrap hover:bg-green-700">
+                            <DisplayTask day={day} scheduledList={scheduledList} />
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
           {TodoModalOpen && (
-            <Modal>
+            <Modal position={modalPosition}>
               <Contents type={type} />
             </Modal>
           )}

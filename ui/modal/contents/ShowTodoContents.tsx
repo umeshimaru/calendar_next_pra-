@@ -59,50 +59,71 @@ export const ShowTodoContents = () => {
  
 
   return (
-    <>
-      <div>
-        <h1>show</h1>
-
+    <div className="p-4 w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-lg font-semibold text-gray-800">予定詳細</h1>
         {!isEditing && (
-          <>
-            <button onClick={() => setIsEditing(true)}>編集</button>
-            <button onClick={deleteTodo}>削除</button>
-          </>
-        )}
-
-        {/* タスク名 */}
-        <div>
-          <h2>タスク名</h2>
-          {isEditing ? (
-            <input
-              type="text"
-              value={todoText}
-              onChange={(e) => setTodoText(e.target.value)}
-            />
-          ) : (
-            <h2>{currentTodo?.todo}</h2>
-          )}
-        </div>
-
-        {/* 開始日 */}
-        <div>
-          <h2>開始日</h2>
-          <p>{formatDateToYmd(currentTodo?.startDate)}</p>
-        </div>
-
-        {/* 終了日 */}
-        <div>
-          <h2>終了日</h2>
-          <p>{formatDateToYmd(currentTodo?.endDate)}</p>
-        </div>
-
-        {isEditing && (
-          <>
-            <button onClick={saveEdit}>保存</button>
-            <button onClick={() => setIsEditing(false)}>キャンセル</button>
-          </>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setIsEditing(true)}
+              className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded transition-colors"
+            >
+              編集
+            </button>
+            <button 
+              onClick={deleteTodo}
+              className="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded transition-colors"
+            >
+              削除
+            </button>
+          </div>
         )}
       </div>
-    </>
+
+      {/* タスク名 */}
+      <div className="mb-3">
+        <label className="block text-xs font-medium text-gray-700 mb-1">タスク名</label>
+        {isEditing ? (
+          <input
+            type="text"
+            value={todoText}
+            onChange={(e) => setTodoText(e.target.value)}
+            className="w-full border-0 border-b-2 border-gray-300 pb-2 text-base outline-none focus:border-blue-500 transition-colors"
+            placeholder={currentTodo?.todo}
+          />
+        ) : (
+          <p className="text-base text-gray-800 pb-2 border-b border-gray-200">{currentTodo?.todo}</p>
+        )}
+      </div>
+
+      {/* 開始日 */}
+      <div className="mb-3">
+        <label className="block text-xs font-medium text-gray-700 mb-1">開始日</label>
+        <p className="text-sm text-gray-600 py-1.5">{formatDateToYmd(currentTodo?.startDate)}</p>
+      </div>
+
+      {/* 終了日 */}
+      <div className="mb-4">
+        <label className="block text-xs font-medium text-gray-700 mb-1">終了日</label>
+        <p className="text-sm text-gray-600 py-1.5">{formatDateToYmd(currentTodo?.endDate)}</p>
+      </div>
+
+      {isEditing && (
+        <div className="flex justify-end gap-2">
+          <button 
+            onClick={() => setIsEditing(false)}
+            className="px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-50 rounded transition-colors"
+          >
+            キャンセル
+          </button>
+          <button 
+            onClick={saveEdit}
+            className="bg-blue-600 text-white px-4 py-1.5 rounded-md hover:bg-blue-700 transition-colors font-medium text-sm"
+          >
+            保存
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
