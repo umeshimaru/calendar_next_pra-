@@ -44,7 +44,9 @@ export const EditContext = createContext<
       scheduledLists: ScheduledTodo[] | null
       setScheduledLists: React.Dispatch<
         React.SetStateAction<ScheduledTodo[] | null>
+
       >
+       setIsTodoModalOpen: React.Dispatch<React.SetStateAction<boolean>>
     }
   | undefined
 >(undefined)
@@ -54,7 +56,7 @@ type CalendarDaysProp = CalendarDataProps['calendarDates']
 export type StartDateType = ScheduledTodo['startDate'] //
 export type EndDateType = ScheduledTodo['endDate']
 
-export type ModalType = 'create' | 'edit' | 'read' | undefined
+export type ModalType = 'create' | 'read' | undefined
 
 const CalendarsList = ({
   calendarDays,
@@ -80,8 +82,6 @@ const CalendarsList = ({
 
   const weeks = ['月', '火', '水', '木', '金', '土', '日']
 
-  console.log(todoId)
-
   return (
     <>
       <ScheduledListContext.Provider
@@ -99,7 +99,7 @@ const CalendarsList = ({
         }}
       >
         <EditContext.Provider
-          value={{ todoId, scheduledLists, setScheduledLists }}
+          value={{ todoId, scheduledLists, setScheduledLists,setIsTodoModalOpen }}
         >
           {calendarDays.map((day: Day) => (
             <div key={day} onClick={() => openModal(day)}>

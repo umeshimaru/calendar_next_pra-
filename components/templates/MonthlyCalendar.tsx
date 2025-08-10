@@ -1,4 +1,4 @@
-import Header from '../organisms/Header'
+
 import CalendarsList from '../organisms/CalendarsList'
 import {
   useCalendarDays,
@@ -13,7 +13,6 @@ const MonthlyCalendar = () => {
 
   return (
     <div>
-      <Header />
       <CalendarsList calendarDays={calendarDates} />
     </div>
   )

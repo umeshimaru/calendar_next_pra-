@@ -19,31 +19,12 @@ export const ShowTodoContents = () => {
     return <div>エラー: コンテキストが存在しません</div>
   }
 
-  const { todoId, scheduledLists, setScheduledLists } = context
+  const { todoId, scheduledLists, setScheduledLists, setIsTodoModalOpen } = context
   const currentTodo = scheduledLists?.find(
     (todo: ScheduledTodo) => todo.id === todoId
   )
 
-  // const edit = ({e}: {e: React.FormEvent<HTMLFormElement>}) => {
-  //   e.preventDefault();
-  //   const formData = new FormData(e.currentTarget);
-  //   const todoText = formData.get('todo') as string;
-  //   const startDateObj = new Date(formData.get('startDate')as string)
-  //   const endDateObj = new Date(formData.get('endDate') as string)
-  //   const updatedList = scheduledLists?.map((todo: ScheduledTodo) => {
-  //     if (todo.id === todoId) {
-  //       return {
-  //         ...todo,
-  //         todo: todoText,
-  //         startDate: startDateObj,
-  //         endDate: endDateObj,
-  //       };
-  //     }
-  //     return todo;
-  //   });
-
-  // setScheduledLists(updatedList || []);
-  // }
+  
 
   const deleteTodo = () => {
     const updatedList = scheduledLists?.filter(
@@ -52,6 +33,7 @@ export const ShowTodoContents = () => {
     setIsEditing(false)
     setTodoText('')
     setScheduledLists(updatedList || [])
+    setIsTodoModalOpen(false) // Close the modal after deletion
   }
 
   // 保存処理
@@ -65,14 +47,16 @@ export const ShowTodoContents = () => {
           endDate: todo.endDate, // ここは編集しないのでそのまま
         }
       }
+      
       return todo
     })
 
     setScheduledLists(updatedList || [])
     setIsEditing(false)
+    setIsTodoModalOpen(false) 
   }
 
-  console.log(currentTodo?.startDate)
+ 
 
   return (
     <>

@@ -7,6 +7,7 @@ import { getYear, getMonth } from 'date-fns'
 import { YearMonthContextProvider, YearMonthContext } from '../contexts/YearMonthContext'
 import { Period } from '../contexts/YearMonthContext'
 import WeeklyCalendar from '@/components/templates/WeeklyCalndar'
+import Header from '@/components/organisms/Header'
 
 const now = new Date()
 const thisYear = getYear(now)
@@ -28,6 +29,7 @@ export default function Home() {
     <YearMonthContextProvider.Provider
       value={{ defaultYear, setDefaultYear, defaultMonth, setDefaultMonth,period, setPeriod }}
     >
+    <Header />
 
  {(() => {
       switch (period) {
