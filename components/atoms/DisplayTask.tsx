@@ -1,0 +1,51 @@
+import { ScheduledTodo, type Day } from '@/components/organisms/CalendarsList'
+import {
+  useCalendarDays,
+  type CalendarDataProps,
+} from '@/hooks/useCalendarDays'
+import { ScheduledListContext } from '@/components/organisms/CalendarsList'
+import React from 'react'
+import { useContext } from 'react'
+import { set } from 'date-fns'
+
+type DisplayTaskProps = {
+  day: Day
+  scheduledList: ScheduledTodo
+}
+
+type ThisYearType = CalendarDataProps['thisYear']
+type ThisMonthType = CalendarDataProps['thisMonth']
+
+export const DisplayTask: React.FC<DisplayTaskProps> = ({
+  day,
+  scheduledList,
+}) => {
+  const {
+    thisYear,
+    thisMonth,
+  }: { thisYear: ThisYearType; thisMonth: ThisMonthType } = useCalendarDays()
+  const context = useContext(ScheduledListContext)
+  if (!context) {
+    throw new Error('DisplayTask must be used within ScheduledListContext')
+  }
+  const { setIsTodoModalOpen, setType, setTodoId } = context
+  const currentDate = new Date(thisYear, thisMonth - 1, day)
+
+  const openEditModal = (event: React.MouseEvent, id: number) => {
+    event.stopPropagation()
+    setIsTodoModalOpen(true)
+    setType('read')
+    setTodoId((PreviousId) => id)
+  }
+
+  return (
+    <>
+      {currentDate >= scheduledList.startDate &&
+        currentDate <= scheduledList.endDate && (
+          <div onClick={(event) => openEditModal(event, scheduledList.id)}>
+            {scheduledList.todo}
+          </div>
+        )}
+    </>
+  )
+}
