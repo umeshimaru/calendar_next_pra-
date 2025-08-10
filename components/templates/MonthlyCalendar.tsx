@@ -7,7 +7,7 @@ import {
 
 type CalendarDatesProp = CalendarDataProps['calendarDates']
 
-const Calendar = () => {
+const MonthlyCalendar = () => {
   const { calendarDates }: { calendarDates: CalendarDatesProp } =
     useCalendarDays()
 
@@ -19,4 +19,4 @@ const Calendar = () => {
   )
 }
 
-export default Calendar
+export default MonthlyCalendar
