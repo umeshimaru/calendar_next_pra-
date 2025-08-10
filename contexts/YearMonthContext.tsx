@@ -16,6 +16,8 @@ export type YearMonthContext = {
   setDefaultMonth: React.Dispatch<React.SetStateAction<number>>
   period: Period
   setPeriod: React.Dispatch<React.SetStateAction<Period>>;
+  weekStartDate: Date | null
+  setWeekStartDate: React.Dispatch<React.SetStateAction<Date | null>>
 }
 
 

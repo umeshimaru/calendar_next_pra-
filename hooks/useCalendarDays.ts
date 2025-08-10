@@ -14,11 +14,11 @@ export function useCalendarDays() {
     throw new Error('コンテキストエラー')
   }
 
-  const { defaultYear, defaultMonth, period } = context
+  const { defaultYear, defaultMonth, period, weekStartDate } = context
 
   if (period === 'week') {
-    const today = new Date()
-    const weekStart = startOfWeek(today, { weekStartsOn: 1 })
+    const baseDate = weekStartDate || new Date()
+    const weekStart = startOfWeek(baseDate, { weekStartsOn: 1 })
     const weekDays = Array.from({ length: 7 }, (_, i) => {
       const currentDay = addDays(weekStart, i)
       return currentDay.getDate()

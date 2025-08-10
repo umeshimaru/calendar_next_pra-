@@ -2,6 +2,7 @@ import Button from '../atoms/Button'
 import { useContext } from 'react'
 import { YearMonthContextProvider } from '../../contexts/YearMonthContext'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
+import { addWeeks, startOfWeek } from 'date-fns'
 
 const YearMonthWithButton = () => {
   const context = useContext(YearMonthContextProvider)
@@ -10,7 +11,7 @@ const YearMonthWithButton = () => {
       'YearMonthWithButton must be used within YearMonthContext.Provider'
     )
   }
-  const { defaultYear, setDefaultYear, defaultMonth, setDefaultMonth } = context
+  const { defaultYear, setDefaultYear, defaultMonth, setDefaultMonth, period, weekStartDate, setWeekStartDate } = context
 
   const prevMonth = () => {
     if (defaultMonth === 1) {
@@ -30,13 +31,41 @@ const YearMonthWithButton = () => {
     }
   }
 
+  const prevWeek = () => {
+    const currentWeekStart = weekStartDate || startOfWeek(new Date(), { weekStartsOn: 1 })
+    const previousWeekStart = addWeeks(currentWeekStart, -1)
+    setWeekStartDate(previousWeekStart)
+  }
+
+  const nextWeek = () => {
+    const currentWeekStart = weekStartDate || startOfWeek(new Date(), { weekStartsOn: 1 })
+    const nextWeekStart = addWeeks(currentWeekStart, 1)
+    setWeekStartDate(nextWeekStart)
+  }
+
+  const handlePrevClick = () => {
+    if (period === 'week') {
+      prevWeek()
+    } else {
+      prevMonth()
+    }
+  }
+
+  const handleNextClick = () => {
+    if (period === 'week') {
+      nextWeek()
+    } else {
+      nextMonth()
+    }
+  }
+
   return (
     <div>
-      <Button icon={<ChevronLeft />} onClick={prevMonth} />
+      <Button icon={<ChevronLeft />} onClick={handlePrevClick} />
       <p>
         {defaultYear}年{defaultMonth}月
       </p>
-      <Button icon={<ChevronRight />} onClick={nextMonth} />
+      <Button icon={<ChevronRight />} onClick={handleNextClick} />
     </div>
   )
 }

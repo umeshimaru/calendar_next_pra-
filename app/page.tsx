@@ -24,12 +24,13 @@ export default function Home() {
   const [defaultYear, setDefaultYear] = useState<number>(thisYear)
   const [defaultMonth, setDefaultMonth] = useState<number>(thisMonth)
    const [period, setPeriod] = useState<Period>("month");
+  const [weekStartDate, setWeekStartDate] = useState<Date | null>(null)
   const [scheduledLists, setScheduledLists] = useState<ScheduledTodo[] | null>(null)
 
 
   return (
     <YearMonthContextProvider.Provider
-      value={{ defaultYear, setDefaultYear, defaultMonth, setDefaultMonth,period, setPeriod }}
+      value={{ defaultYear, setDefaultYear, defaultMonth, setDefaultMonth,period, setPeriod, weekStartDate, setWeekStartDate }}
     >
     <Header />
 
