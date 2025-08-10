@@ -8,6 +8,7 @@ import { YearMonthContextProvider, YearMonthContext } from '../contexts/YearMont
 import { Period } from '../contexts/YearMonthContext'
 import WeeklyCalendar from '@/components/templates/WeeklyCalndar'
 import Header from '@/components/organisms/Header'
+import { ScheduledTodo } from '@/components/organisms/CalendarsList'
 
 const now = new Date()
 const thisYear = getYear(now)
@@ -23,6 +24,7 @@ export default function Home() {
   const [defaultYear, setDefaultYear] = useState<number>(thisYear)
   const [defaultMonth, setDefaultMonth] = useState<number>(thisMonth)
    const [period, setPeriod] = useState<Period>("month");
+  const [scheduledLists, setScheduledLists] = useState<ScheduledTodo[] | null>(null)
 
 
   return (
@@ -34,9 +36,9 @@ export default function Home() {
  {(() => {
       switch (period) {
         case 'week':
-          return <WeeklyCalendar />;
+          return <WeeklyCalendar scheduledLists={scheduledLists} setScheduledLists={setScheduledLists} />;
         case 'month':
-          return <MonthlyCalendar/>;
+          return <MonthlyCalendar scheduledLists={scheduledLists} setScheduledLists={setScheduledLists} />;
       }
     })()}
     </YearMonthContextProvider.Provider>

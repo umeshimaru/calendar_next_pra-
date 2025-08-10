@@ -61,15 +61,16 @@ export type ModalType = 'create' | 'read' | undefined
 
 const CalendarsList = ({
   calendarDays,
-  calendarType 
+  calendarType,
+  scheduledLists,
+  setScheduledLists
 }: {
   calendarDays: CalendarDaysProp
-  calendarType: Period 
+  calendarType: Period
+  scheduledLists: ScheduledTodo[] | null
+  setScheduledLists: React.Dispatch<React.SetStateAction<ScheduledTodo[] | null>>
 }) => {
   const [TodoModalOpen, setIsTodoModalOpen] = useState<boolean>(false)
-  const [scheduledLists, setScheduledLists] = useState<ScheduledTodo[] | null>(
-    null
-  )
   const [type, setType] = useState<ModalType>(undefined)
   const [clickedDay, setClickedDay] = useState<Day | null>(null)
   const [todoId, setTodoId] = useState<number>(0)
