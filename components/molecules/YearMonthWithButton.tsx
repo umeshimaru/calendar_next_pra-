@@ -11,7 +11,15 @@ const YearMonthWithButton = () => {
       'YearMonthWithButton must be used within YearMonthContext.Provider'
     )
   }
-  const { defaultYear, setDefaultYear, defaultMonth, setDefaultMonth, period, weekStartDate, setWeekStartDate } = context
+  const {
+    defaultYear,
+    setDefaultYear,
+    defaultMonth,
+    setDefaultMonth,
+    period,
+    weekStartDate,
+    setWeekStartDate,
+  } = context
 
   const prevMonth = () => {
     if (defaultMonth === 1) {
@@ -32,15 +40,45 @@ const YearMonthWithButton = () => {
   }
 
   const prevWeek = () => {
-    const currentWeekStart = weekStartDate || startOfWeek(new Date(), { weekStartsOn: 1 })
+    const currentWeekStart =
+      weekStartDate || startOfWeek(new Date(), { weekStartsOn: 1 })
     const previousWeekStart = addWeeks(currentWeekStart, -1)
     setWeekStartDate(previousWeekStart)
+
+    // 月や年を跨いだかチェックして defaultMonth, defaultYear を更新
+    const newMonth = previousWeekStart.getMonth() + 1
+    const newYear = previousWeekStart.getFullYear()
+
+    // 月間カレンダーと同じロジックで月と年を更新
+    if (newMonth < defaultMonth || newYear < defaultYear) {
+      if (defaultMonth === 1) {
+        setDefaultYear(defaultYear - 1)
+        setDefaultMonth(12)
+      } else {
+        setDefaultMonth(defaultMonth - 1)
+      }
+    }
   }
 
   const nextWeek = () => {
-    const currentWeekStart = weekStartDate || startOfWeek(new Date(), { weekStartsOn: 1 })
+    const currentWeekStart =
+      weekStartDate || startOfWeek(new Date(), { weekStartsOn: 1 })
     const nextWeekStart = addWeeks(currentWeekStart, 1)
     setWeekStartDate(nextWeekStart)
+
+    // 月や年を跨いだかチェックして defaultMonth, defaultYear を更新
+    const newMonth = nextWeekStart.getMonth() + 1
+    const newYear = nextWeekStart.getFullYear()
+
+    // 月間カレンダーと同じロジックで月と年を更新
+    if (newMonth > defaultMonth || newYear > defaultYear) {
+      if (defaultMonth === 12) {
+        setDefaultYear(defaultYear + 1)
+        setDefaultMonth(1)
+      } else {
+        setDefaultMonth(defaultMonth + 1)
+      }
+    }
   }
 
   const handlePrevClick = () => {

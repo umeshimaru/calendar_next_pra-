@@ -23,7 +23,7 @@ export function useCalendarDays() {
       const currentDay = addDays(weekStart, i)
       return currentDay.getDate()
     })
-    
+
     const weeklyDates: CalendarDataProps = {
       thisYear: weekStart.getFullYear(),
       thisMonth: weekStart.getMonth() + 1,
@@ -31,7 +31,6 @@ export function useCalendarDays() {
     }
     return weeklyDates
   }
-
 
   const calendarLastDay = getDaysInMonth(
     new Date(defaultYear, defaultMonth - 1)
@@ -46,14 +45,10 @@ export function useCalendarDays() {
     calendarDates.push(day)
   })
 
-  const  monthlyDates: CalendarDataProps = {
+  const monthlyDates: CalendarDataProps = {
     thisYear: defaultYear,
     thisMonth: defaultMonth,
     calendarDates: calendarDates,
   }
   return monthlyDates
 }
-
-
-
-

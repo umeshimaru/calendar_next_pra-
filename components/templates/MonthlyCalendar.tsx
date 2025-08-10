@@ -1,4 +1,3 @@
-
 import CalendarsList from '../organisms/CalendarsList'
 import {
   useCalendarDays,
@@ -10,18 +9,23 @@ type CalendarDatesProp = CalendarDataProps['calendarDates']
 
 type MonthlyCalendarProps = {
   scheduledLists: ScheduledTodo[] | null
-  setScheduledLists: React.Dispatch<React.SetStateAction<ScheduledTodo[] | null>>
+  setScheduledLists: React.Dispatch<
+    React.SetStateAction<ScheduledTodo[] | null>
+  >
 }
 
-const MonthlyCalendar = ({ scheduledLists, setScheduledLists }: MonthlyCalendarProps) => {
+const MonthlyCalendar = ({
+  scheduledLists,
+  setScheduledLists,
+}: MonthlyCalendarProps) => {
   const { calendarDates }: { calendarDates: CalendarDatesProp } =
     useCalendarDays()
 
   return (
     <div>
-      <CalendarsList 
-        calendarDays={calendarDates} 
-        calendarType="month" 
+      <CalendarsList
+        calendarDays={calendarDates}
+        calendarType="month"
         scheduledLists={scheduledLists}
         setScheduledLists={setScheduledLists}
       />

@@ -1,11 +1,13 @@
 'use client'
 
 import { CalendarDataProps, useCalendarDays } from '../../hooks/useCalendarDays'
-import { useState, createContext, useEffect } from 'react'
+import { useState, createContext, useEffect, useContext } from 'react'
 import Modal from '../../ui/modal/Modal'
 import { DisplayTask } from '../atoms/DisplayTask'
 import { Contents } from '../../ui/modal/contents/Contents'
 import { Period } from '@/contexts/YearMonthContext'
+import { YearMonthContextProvider } from '../../contexts/YearMonthContext'
+import { startOfWeek, addDays } from 'date-fns'
 
 export type ScheduledTodo = {
   id: number
@@ -45,9 +47,8 @@ export const EditContext = createContext<
       scheduledLists: ScheduledTodo[] | null
       setScheduledLists: React.Dispatch<
         React.SetStateAction<ScheduledTodo[] | null>
-
       >
-       setIsTodoModalOpen: React.Dispatch<React.SetStateAction<boolean>>
+      setIsTodoModalOpen: React.Dispatch<React.SetStateAction<boolean>>
     }
   | undefined
 >(undefined)
@@ -63,24 +64,36 @@ const CalendarsList = ({
   calendarDays,
   calendarType,
   scheduledLists,
-  setScheduledLists
+  setScheduledLists,
 }: {
   calendarDays: CalendarDaysProp
   calendarType: Period
   scheduledLists: ScheduledTodo[] | null
-  setScheduledLists: React.Dispatch<React.SetStateAction<ScheduledTodo[] | null>>
+  setScheduledLists: React.Dispatch<
+    React.SetStateAction<ScheduledTodo[] | null>
+  >
 }) => {
   const [TodoModalOpen, setIsTodoModalOpen] = useState<boolean>(false)
   const [type, setType] = useState<ModalType>(undefined)
   const [clickedDay, setClickedDay] = useState<Day | null>(null)
   const [todoId, setTodoId] = useState<number>(0)
   const [todoUniqueId, setUniqueId] = useState<number>(1)
-  
+
   const { thisYear, thisMonth } = useCalendarDays()
+  const context = useContext(YearMonthContextProvider)
+
+  // 今日の日付を取得
+  const today = new Date()
+  const todayDay = today.getDate()
+  const todayMonth = today.getMonth() + 1
+  const todayYear = today.getFullYear()
 
   console.log(scheduledLists)
 
-  const [modalPosition, setModalPosition] = useState<{x: number, y: number} | null>(null)
+  const [modalPosition, setModalPosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
 
   useEffect(() => {
     const handleCloseModal = () => {
@@ -98,20 +111,20 @@ const CalendarsList = ({
     const modalWidth = 320 // w-80 = 20rem = 320px
     const windowWidth = window.innerWidth
     const windowHeight = window.innerHeight
-    
+
     // 基本的にクリックした日付の左に配置
     let x = rect.left - modalWidth - 10
-    
+
     // 左に配置して画面外にはみ出る場合は右に配置
     if (x < 10) {
       x = rect.right + 10
     }
-    
+
     // それでも右にはみ出る場合は画面内に収める
     if (x + modalWidth > windowWidth - 10) {
       x = windowWidth - modalWidth - 10
     }
-    
+
     // Y座標も画面内に収める
     let y = rect.top
     const modalMaxHeight = windowHeight * 0.6 // max-h-[60vh]
@@ -121,10 +134,10 @@ const CalendarsList = ({
     if (y < 10) {
       y = 10
     }
-    
+
     setModalPosition({
       x: x,
-      y: y
+      y: y,
     })
     setIsTodoModalOpen(true)
     setType('create')
@@ -150,101 +163,254 @@ const CalendarsList = ({
         }}
       >
         <EditContext.Provider
-          value={{ todoId, scheduledLists, setScheduledLists,setIsTodoModalOpen }}
+          value={{
+            todoId,
+            scheduledLists,
+            setScheduledLists,
+            setIsTodoModalOpen,
+          }}
         >
           <div className="w-full">
-            <div className={calendarType === 'month' ? 
-              'grid grid-cols-7 gap-0 border border-gray-300 bg-white' : 
-              'flex flex-col bg-white border border-gray-300'
-            }>
+            <div
+              className={
+                calendarType === 'month'
+                  ? 'grid grid-cols-7 gap-0 border border-gray-300 bg-white'
+                  : 'flex flex-col bg-white border border-gray-300'
+              }
+            >
               {calendarType === 'month' && (
                 <div className="col-span-7 grid grid-cols-7 gap-0 bg-gray-50 border-b border-gray-300">
-                  {weeks.map(week => (
-                    <div key={week} className="py-3 px-4 text-center text-sm font-medium text-gray-600 border-r border-gray-300 last:border-r-0">{week}</div>
-                  ))}
-                </div>
-              )}
-              
-              {calendarType === 'week' && (
-                <>
-                  <div className="grid grid-cols-8 gap-0 border-b border-gray-300">
-                    <div className="p-3 text-center text-xs text-gray-500 border-r border-gray-300"></div>
-                    {weeks.map(week => (
-                      <div key={week} className="p-3 text-center text-sm font-medium text-gray-600 border-r border-gray-300 last:border-r-0">{week}</div>
-                    ))}
-                  </div>
-                  
-                  <div className="grid grid-cols-8 gap-0 border-b border-gray-300">
-                    <div className="p-3 text-center text-xs text-gray-500 border-r border-gray-300">GMT-04</div>
-                    {calendarDays.map((day: Day) => (
-                      <div key={day} className="p-3 text-center text-lg font-normal text-gray-800 border-r border-gray-300 last:border-r-0 cursor-pointer hover:bg-gray-50" onClick={(event) => openModal(day, event)}>
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {Array.from({ length: 24 }).map((_, hour) => (
-                    <div key={hour} className="grid grid-cols-8 gap-0 border-b border-gray-200 min-h-[40px]">
-                      <div className="p-2 text-xs text-gray-500 border-r border-gray-300 text-right">
-                        {hour === 0 ? '午前12時' : hour < 12 ? `午前${hour}時` : hour === 12 ? '午後12時' : `午後${hour - 12}時`}
-                      </div>
-                      {calendarDays.map((day: Day) => (
-                        <div key={`${day}-${hour}`} className="border-r border-gray-300 last:border-r-0 cursor-pointer hover:bg-gray-50 relative" onClick={(event) => openModal(day, event)}>
-                          {scheduledLists?.map(
-                            (scheduledList: ScheduledTodo, index: number) => {
-                              const taskDate = new Date(scheduledList.startDate).getDate()
-                              return taskDate === day && hour === 9 ? (
-                                <div key={`${scheduledList.todo}+${index}`} className="absolute inset-x-1 top-1 bg-green-600 text-white px-2 py-1 rounded text-xs overflow-hidden text-ellipsis whitespace-nowrap hover:bg-green-700">
-                                  <DisplayTask day={day} scheduledList={scheduledList} />
-                                </div>
-                              ) : null
-                            }
-                          )}
-                        </div>
-                      ))}
+                  {weeks.map((week) => (
+                    <div
+                      key={week}
+                      className="py-3 px-4 text-center text-sm font-medium text-gray-600 border-r border-gray-300 last:border-r-0"
+                    >
+                      {week}
                     </div>
                   ))}
+                </div>
+              )}
+
+              {calendarType === 'week' && (
+                <>
+                  <div className="grid grid-cols-7 gap-0 border-b border-gray-300">
+                    {weeks.map((week) => (
+                      <div
+                        key={week}
+                        className="p-3 text-center text-sm font-medium text-gray-600 border-r border-gray-300 last:border-r-0"
+                      >
+                        {week}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-7 gap-0">
+                    {calendarDays.map((day: Day) => {
+                      // 週間カレンダーの場合、実際の日付を計算して今日かどうかチェック
+                      let isToday = false
+                      if (calendarType === 'week' && context?.weekStartDate) {
+                        const weekStart = startOfWeek(context.weekStartDate, {
+                          weekStartsOn: 1,
+                        })
+                        const dayIndex = calendarDays.indexOf(day)
+                        const actualDate = addDays(weekStart, dayIndex)
+                        isToday =
+                          actualDate.getDate() === todayDay &&
+                          actualDate.getMonth() + 1 === todayMonth &&
+                          actualDate.getFullYear() === todayYear
+                      } else {
+                        isToday =
+                          day === todayDay &&
+                          thisMonth === todayMonth &&
+                          thisYear === todayYear
+                      }
+
+                      return (
+                        <div
+                          key={day}
+                          className="bg-white cursor-pointer p-3 flex flex-col min-h-[120px] transition-colors hover:bg-gray-50 border-r border-b border-gray-300 relative last:border-r-0"
+                          onClick={(event) => openModal(day, event)}
+                        >
+                          <div
+                            className={`text-sm font-normal ${isToday ? 'bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mb-1' : 'text-gray-800 mb-2'}`}
+                          >
+                            {day}
+                          </div>
+                          <div className="flex-1 flex flex-col gap-1">
+                            {scheduledLists?.map(
+                              (scheduledList: ScheduledTodo, index: number) => {
+                                // 週間カレンダーの場合、現在表示されている週の日付を正確に取得
+                                const { weekStartDate } = context || {}
+                                let currentDate
+
+                                if (calendarType === 'week' && weekStartDate) {
+                                  const weekStart = startOfWeek(weekStartDate, {
+                                    weekStartsOn: 1,
+                                  })
+                                  const dayIndex = calendarDays.indexOf(day)
+                                  currentDate = addDays(weekStart, dayIndex)
+                                } else {
+                                  currentDate = new Date(
+                                    thisYear,
+                                    thisMonth - 1,
+                                    day
+                                  )
+                                }
+
+                                const currentDateOnly = new Date(
+                                  currentDate.getFullYear(),
+                                  currentDate.getMonth(),
+                                  currentDate.getDate()
+                                )
+                                const startDateOnly = new Date(
+                                  scheduledList.startDate.getFullYear(),
+                                  scheduledList.startDate.getMonth(),
+                                  scheduledList.startDate.getDate()
+                                )
+                                const endDateOnly = new Date(
+                                  scheduledList.endDate.getFullYear(),
+                                  scheduledList.endDate.getMonth(),
+                                  scheduledList.endDate.getDate()
+                                )
+
+                                // デバッグ情報
+                                if (calendarType === 'week') {
+                                  console.log('Weekly Calendar Debug:', {
+                                    day,
+                                    currentDate: currentDate.toDateString(),
+                                    startDate:
+                                      scheduledList.startDate.toDateString(),
+                                    endDate:
+                                      scheduledList.endDate.toDateString(),
+                                    todo: scheduledList.todo,
+                                  })
+                                }
+
+                                // 期間内の日付かどうかをチェック
+                                const isInPeriod =
+                                  currentDateOnly >= startDateOnly &&
+                                  currentDateOnly <= endDateOnly
+                                // 開始日かどうかをチェック
+                                const isStartDate =
+                                  currentDateOnly.getTime() ===
+                                  startDateOnly.getTime()
+
+                                return isInPeriod ? (
+                                  <div
+                                    key={`${scheduledList.todo}+${index}`}
+                                    className="absolute left-0 right-0 z-10"
+                                  >
+                                    <div className="w-full cursor-pointer bg-green-600 text-white px-3 py-1 text-xs leading-4 overflow-hidden text-ellipsis whitespace-nowrap hover:bg-green-700 h-6 flex items-center">
+                                      {isStartDate ? (
+                                        <DisplayTask
+                                          day={day}
+                                          scheduledList={scheduledList}
+                                        />
+                                      ) : (
+                                        <div
+                                          onClick={(event) => {
+                                            event.stopPropagation()
+                                            // 編集モーダルを開く処理
+                                          }}
+                                        >
+                                          &nbsp;
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                ) : null
+                              }
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </>
               )}
-              
-              {calendarType === 'month' && calendarDays.map((day: Day, dayIndex: number) => (
-                <div key={day} className={`bg-white cursor-pointer p-3 flex flex-col min-h-[120px] transition-colors hover:bg-gray-50 border-r border-b border-gray-300 relative ${dayIndex % 7 === 6 ? 'border-r-0' : ''}`} onClick={(event) => openModal(day, event)}>
-                  <div className="text-sm font-normal text-gray-800 mb-2">{day}</div>
-                  <div className="flex-1 flex flex-col gap-1">
-                    {scheduledLists?.map(
-                      (scheduledList: ScheduledTodo, index: number) => {
-                        // 現在の日付を作成
-                        const currentDate = new Date(thisYear, thisMonth - 1, day);
-                        const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-                        const startDateOnly = new Date(scheduledList.startDate.getFullYear(), scheduledList.startDate.getMonth(), scheduledList.startDate.getDate());
-                        const endDateOnly = new Date(scheduledList.endDate.getFullYear(), scheduledList.endDate.getMonth(), scheduledList.endDate.getDate());
-                        
-                        // 期間内の日付かどうかをチェック
-                        const isInPeriod = currentDateOnly >= startDateOnly && currentDateOnly <= endDateOnly;
-                        // 開始日かどうかをチェック
-                        const isStartDate = currentDateOnly.getTime() === startDateOnly.getTime();
-                        
-                        return isInPeriod ? (
-                          <div key={`${scheduledList.todo}+${index}`} className="absolute left-0 right-0 z-10">
-                            <div className="w-full cursor-pointer bg-green-600 text-white px-3 py-1 text-xs leading-4 overflow-hidden text-ellipsis whitespace-nowrap hover:bg-green-700">
-                              {isStartDate ? (
-                                <DisplayTask day={day} scheduledList={scheduledList} />
-                              ) : (
-                                <div onClick={(event) => {
-                                  event.stopPropagation();
-                                  // 編集モーダルを開く処理
-                                }}>
-                                  &nbsp;
+
+              {calendarType === 'month' &&
+                calendarDays.map((day: Day, dayIndex: number) => {
+                  const isToday =
+                    day === todayDay &&
+                    thisMonth === todayMonth &&
+                    thisYear === todayYear
+
+                  return (
+                    <div
+                      key={day}
+                      className={`bg-white cursor-pointer p-3 flex flex-col min-h-[120px] transition-colors hover:bg-gray-50 border-r border-b border-gray-300 relative ${dayIndex % 7 === 6 ? 'border-r-0' : ''}`}
+                      onClick={(event) => openModal(day, event)}
+                    >
+                      <div
+                        className={`text-sm font-normal ${isToday ? 'bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mb-1' : 'text-gray-800 mb-2'}`}
+                      >
+                        {day}
+                      </div>
+                      <div className="flex-1 flex flex-col gap-1">
+                        {scheduledLists?.map(
+                          (scheduledList: ScheduledTodo, index: number) => {
+                            // 現在の日付を作成
+                            const currentDate = new Date(
+                              thisYear,
+                              thisMonth - 1,
+                              day
+                            )
+                            const currentDateOnly = new Date(
+                              currentDate.getFullYear(),
+                              currentDate.getMonth(),
+                              currentDate.getDate()
+                            )
+                            const startDateOnly = new Date(
+                              scheduledList.startDate.getFullYear(),
+                              scheduledList.startDate.getMonth(),
+                              scheduledList.startDate.getDate()
+                            )
+                            const endDateOnly = new Date(
+                              scheduledList.endDate.getFullYear(),
+                              scheduledList.endDate.getMonth(),
+                              scheduledList.endDate.getDate()
+                            )
+
+                            // 期間内の日付かどうかをチェック
+                            const isInPeriod =
+                              currentDateOnly >= startDateOnly &&
+                              currentDateOnly <= endDateOnly
+                            // 開始日かどうかをチェック
+                            const isStartDate =
+                              currentDateOnly.getTime() ===
+                              startDateOnly.getTime()
+
+                            return isInPeriod ? (
+                              <div
+                                key={`${scheduledList.todo}+${index}`}
+                                className="absolute left-0 right-0 z-10"
+                              >
+                                <div className="w-full cursor-pointer bg-green-600 text-white px-3 py-1 text-xs leading-4 overflow-hidden text-ellipsis whitespace-nowrap hover:bg-green-700 h-6 flex items-center">
+                                  {isStartDate ? (
+                                    <DisplayTask
+                                      day={day}
+                                      scheduledList={scheduledList}
+                                    />
+                                  ) : (
+                                    <div
+                                      onClick={(event) => {
+                                        event.stopPropagation()
+                                        // 編集モーダルを開く処理
+                                      }}
+                                    >
+                                      &nbsp;
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          </div>
-                        ) : null;
-                      }
-                    )}
-                  </div>
-                </div>
-              ))}
+                              </div>
+                            ) : null
+                          }
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
             </div>
           </div>
           {TodoModalOpen && (
