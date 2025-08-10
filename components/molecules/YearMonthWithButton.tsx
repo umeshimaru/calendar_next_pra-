@@ -60,9 +60,9 @@ const YearMonthWithButton = () => {
   }
 
   return (
-    <div>
+    <div className="flex items-center gap-2">
       <Button icon={<ChevronLeft />} onClick={handlePrevClick} />
-      <p>
+      <p className="text-lg font-medium text-gray-800 px-2">
         {defaultYear}年{defaultMonth}月
       </p>
       <Button icon={<ChevronRight />} onClick={handleNextClick} />

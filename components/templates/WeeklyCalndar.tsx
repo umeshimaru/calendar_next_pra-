@@ -12,7 +12,7 @@ type WeeklyCalendarProps = {
 const WeeklyCalendar = ({ scheduledLists, setScheduledLists }: WeeklyCalendarProps) => {
      const { calendarDates }: { calendarDates: CalendarDatesProp } =  useCalendarDays()
   return (
-    <div className="ml-[200px]">
+    <div>
       <CalendarsList 
         calendarDays={calendarDates} 
         calendarType="week" 

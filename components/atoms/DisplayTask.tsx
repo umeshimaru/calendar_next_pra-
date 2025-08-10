@@ -30,6 +30,11 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({
   }
   const { setIsTodoModalOpen, setType, setTodoId } = context
   const currentDate = new Date(thisYear, thisMonth - 1, day)
+  
+  // 日付のみで比較するため時間部分を0に設定
+  const currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate())
+  const startDateOnly = new Date(scheduledList.startDate.getFullYear(), scheduledList.startDate.getMonth(), scheduledList.startDate.getDate())
+  const endDateOnly = new Date(scheduledList.endDate.getFullYear(), scheduledList.endDate.getMonth(), scheduledList.endDate.getDate())
 
   const openEditModal = (event: React.MouseEvent, id: number) => {
     event.stopPropagation()
@@ -40,8 +45,8 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({
 
   return (
     <>
-      {currentDate >= scheduledList.startDate &&
-        currentDate <= scheduledList.endDate && (
+      {currentDateOnly >= startDateOnly &&
+        currentDateOnly <= endDateOnly && (
           <div onClick={(event) => openEditModal(event, scheduledList.id)}>
             {scheduledList.todo}
           </div>

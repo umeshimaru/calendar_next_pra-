@@ -25,7 +25,7 @@ export const DateRangeSelector= () => {
     
   };
   return (
-    <div>
+    <div className="ml-[200px]">
       <label htmlFor="period" style={{ marginRight: "8px" }}>
         表示期間:
       </label>

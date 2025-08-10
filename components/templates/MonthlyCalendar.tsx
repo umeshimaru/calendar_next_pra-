@@ -18,7 +18,7 @@ const MonthlyCalendar = ({ scheduledLists, setScheduledLists }: MonthlyCalendarP
     useCalendarDays()
 
   return (
-    <div className="ml-[200px]">
+    <div>
       <CalendarsList 
         calendarDays={calendarDates} 
         calendarType="month" 
