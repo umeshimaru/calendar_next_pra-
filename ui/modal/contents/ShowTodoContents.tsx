@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react'
 import {
   EditContext,
   type ScheduledTodo,
-} from '../../../components/organisms/CalendarsList'
+} from '@/contexts/ScheduledListContext'
 import { formatDateToYmd } from '@/utils/formatDateToYmd'
 
 export const ShowTodoContents = () => {

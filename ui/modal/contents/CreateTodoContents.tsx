@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react'
-import { ScheduledListContext } from '@/components/organisms/CalendarsList'
-import { set } from 'date-fns'
+import React, { useContext } from 'react'
+import { ScheduledListContext } from '@/contexts/ScheduledListContext'
 
 export const CreateTodoContents = () => {
   const context = useContext(ScheduledListContext)
+
 
   if (!context) {
     throw new Error(
@@ -25,9 +25,6 @@ export const CreateTodoContents = () => {
     const todo = formData.get('todo') as string
     const startDateObj = new Date(formData.get('startDate') as string)
     const endDateObj = new Date(formData.get('endDate') as string)
-    console.log(startDateObj)
-
-    console.log(scheduledLists)
     setScheduledLists([
       ...(scheduledLists || []),
       {

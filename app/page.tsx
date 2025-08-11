@@ -2,20 +2,20 @@
 
 import MonthlyCalendar from '@/components/templates/MonthlyCalendar'
 
-import { useContext, useState } from 'react'
-import { getYear, getMonth } from 'date-fns'
+import { useState } from 'react'
 import {
   YearMonthContextProvider,
-  YearMonthContext,
 } from '../contexts/YearMonthContext'
 import { Period } from '../contexts/YearMonthContext'
-import WeeklyCalendar from '@/components/templates/WeeklyCalndar'
+import WeeklyCalendar from '@/components/templates/WeeklyCalendar'
 import Header from '@/components/organisms/Header'
-import { ScheduledTodo } from '@/components/organisms/CalendarsList'
+import { ScheduledTodo } from '@/contexts/ScheduledListContext'
+import {dates} from '@/utils/dates'
 
-const now = new Date()
-const thisYear = getYear(now)
-const thisMonth = getMonth(now) + 1
+
+const { thisYear, thisMonth } = dates()
+
+
 
 export default function Home() {
   const [defaultYear, setDefaultYear] = useState<number>(thisYear)
