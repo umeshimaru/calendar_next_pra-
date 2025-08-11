@@ -9,6 +9,7 @@ import { Period } from '@/contexts/YearMonthContext'
 import { YearMonthContextProvider } from '../../contexts/YearMonthContext'
 import { startOfWeek, addDays } from 'date-fns'
 
+
 export type ScheduledTodo = {
   id: number
   todo: string
@@ -88,7 +89,7 @@ const CalendarsList = ({
   const todayMonth = today.getMonth() + 1
   const todayYear = today.getFullYear()
 
-  console.log(scheduledLists)
+  console.log(today,todayDay, todayMonth, todayYear,"うんこ")
 
   const [modalPosition, setModalPosition] = useState<{
     x: number
@@ -206,7 +207,6 @@ const CalendarsList = ({
 
                   <div className="grid grid-cols-7 gap-0">
                     {calendarDays.map((day: Day) => {
-                      // 週間カレンダーの場合、実際の日付を計算して今日かどうかチェック
                       let isToday = false
                       if (calendarType === 'week' && context?.weekStartDate) {
                         const weekStart = startOfWeek(context.weekStartDate, {
