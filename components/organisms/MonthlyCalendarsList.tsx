@@ -6,7 +6,7 @@ import Modal from '../../ui/modal/Modal'
 import { DisplayTask } from '../atoms/DisplayTask'
 import { Contents } from '../../ui/modal/contents/Contents'
 import { ScheduledListContext, EditContext, ScheduledTodo, Day, ModalType } from '@/contexts/ScheduledListContext'
-
+import { startOfDay } from "date-fns";
 
 type CalendarDaysProp = CalendarDataProps['calendarDates']
 
@@ -149,21 +149,10 @@ const MonthlyCalendarsList = ({
                             thisMonth - 1,
                             day
                           )
-                          const currentDateOnly = new Date(
-                            currentDate.getFullYear(),
-                            currentDate.getMonth(),
-                            currentDate.getDate()
-                          )
-                          const startDateOnly = new Date(
-                            scheduledList.startDate.getFullYear(),
-                            scheduledList.startDate.getMonth(),
-                            scheduledList.startDate.getDate()
-                          )
-                          const endDateOnly = new Date(
-                            scheduledList.endDate.getFullYear(),
-                            scheduledList.endDate.getMonth(),
-                            scheduledList.endDate.getDate()
-                          )
+                          const currentDateOnly = startOfDay(currentDate)
+
+                         const startDateOnly = startOfDay(scheduledList.startDate)
+                          const endDateOnly = startOfDay(scheduledList.endDate)
 
                           const isInPeriod =
                             currentDateOnly >= startDateOnly &&
@@ -174,7 +163,7 @@ const MonthlyCalendarsList = ({
 
                           return isInPeriod ? (
                             <div
-                              key={`${scheduledList.todo}+${index}`}
+                              key={`${scheduledList.todo}${index}`}
                               className="absolute left-0 right-0 z-10"
                             >
                               <div className="w-full cursor-pointer bg-green-600 text-white px-3 py-1 text-xs leading-4 overflow-hidden text-ellipsis whitespace-nowrap hover:bg-green-700 h-6 flex items-center">
