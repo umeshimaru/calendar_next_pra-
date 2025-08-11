@@ -8,6 +8,7 @@ import { Contents } from '../../ui/modal/contents/Contents'
 import { YearMonthContextProvider } from '../../contexts/YearMonthContext'
 import { startOfWeek, addDays } from 'date-fns'
 import { ScheduledListContext, EditContext, ScheduledTodo, Day, ModalType } from '@/contexts/ScheduledListContext'
+import { startOfDay } from 'date-fns'
 
 
 type CalendarDaysProp = CalendarDataProps['calendarDates']
@@ -180,31 +181,13 @@ const WeeklyCalendarsList = ({
                               )
                             }
 
-                            const currentDateOnly = new Date(
-                              currentDate.getFullYear(),
-                              currentDate.getMonth(),
-                              currentDate.getDate()
-                            )
-                            const startDateOnly = new Date(
-                              scheduledList.startDate.getFullYear(),
-                              scheduledList.startDate.getMonth(),
-                              scheduledList.startDate.getDate()
-                            )
-                            const endDateOnly = new Date(
-                              scheduledList.endDate.getFullYear(),
-                              scheduledList.endDate.getMonth(),
-                              scheduledList.endDate.getDate()
-                            )
+                            const currentDateOnly = startOfDay(currentDate)
 
-                            console.log('Weekly Calendar Debug:', {
-                              day,
-                              currentDate: currentDate.toDateString(),
-                              startDate:
-                                scheduledList.startDate.toDateString(),
-                              endDate:
-                                scheduledList.endDate.toDateString(),
-                              todo: scheduledList.todo,
-                            })
+                            const startDateOnly = startOfDay(
+                              scheduledList.startDate)
+                            const endDateOnly = startOfDay(
+                              scheduledList.endDate)
+
 
                             const isInPeriod =
                               currentDateOnly >= startDateOnly &&
