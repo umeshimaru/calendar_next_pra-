@@ -12,10 +12,12 @@ import { Period } from '../contexts/YearMonthContext'
 import WeeklyCalendar from '@/components/templates/WeeklyCalndar'
 import Header from '@/components/organisms/Header'
 import { ScheduledTodo } from '@/components/organisms/CalendarsList'
+import {dates} from '@/utils/dates'
 
-const now = new Date()
-const thisYear = getYear(now)
-const thisMonth = getMonth(now) + 1
+
+const { thisYear, thisMonth } = dates()
+
+
 
 export default function Home() {
   const [defaultYear, setDefaultYear] = useState<number>(thisYear)
