@@ -1,12 +1,10 @@
-import { ScheduledTodo, type Day } from '@/components/organisms/CalendarsList'
 import {
   useCalendarDays,
   type CalendarDataProps,
 } from '@/hooks/useCalendarDays'
-import { ScheduledListContext } from '@/components/organisms/CalendarsList'
+import { ScheduledListContext, ScheduledTodo, Day } from '@/contexts/ScheduledListContext'
 import React from 'react'
 import { useContext } from 'react'
-import { set } from 'date-fns'
 
 type DisplayTaskProps = {
   day: Day
@@ -52,7 +50,7 @@ export const DisplayTask: React.FC<DisplayTaskProps> = ({
     event.stopPropagation()
     setIsTodoModalOpen(true)
     setType('read')
-    setTodoId((PreviousId) => id)
+    setTodoId(() => id)
   }
 
   return (

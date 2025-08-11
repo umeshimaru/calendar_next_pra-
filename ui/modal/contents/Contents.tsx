@@ -1,6 +1,5 @@
 import { CreateTodoContents } from './CreateTodoContents'
-import { EditTodoContents } from './EditTodoContents'
-import type { ModalType } from '@/components/organisms/CalendarsList'
+import type { ModalType } from '@/contexts/ScheduledListContext'
 import { ShowTodoContents } from './ShowTodoContents'
 
 export const Contents = ({ type }: { type: ModalType }) => {

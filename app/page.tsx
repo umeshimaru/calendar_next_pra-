@@ -2,16 +2,14 @@
 
 import MonthlyCalendar from '@/components/templates/MonthlyCalendar'
 
-import { useContext, useState } from 'react'
-import { getYear, getMonth } from 'date-fns'
+import { useState } from 'react'
 import {
   YearMonthContextProvider,
-  YearMonthContext,
 } from '../contexts/YearMonthContext'
 import { Period } from '../contexts/YearMonthContext'
-import WeeklyCalendar from '@/components/templates/WeeklyCalndar'
+import WeeklyCalendar from '@/components/templates/WeeklyCalendar'
 import Header from '@/components/organisms/Header'
-import { ScheduledTodo } from '@/components/organisms/CalendarsList'
+import { ScheduledTodo } from '@/contexts/ScheduledListContext'
 import {dates} from '@/utils/dates'
 
 

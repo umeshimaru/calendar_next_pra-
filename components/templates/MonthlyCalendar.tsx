@@ -1,10 +1,9 @@
-import CalendarsList from '../organisms/CalendarsList'
 import {
   useCalendarDays,
   type CalendarDataProps,
 } from '../../hooks/useCalendarDays'
-import { ScheduledTodo } from '../organisms/CalendarsList'
-
+import { ScheduledTodo } from '@/contexts/ScheduledListContext'
+import MonthlyCalendarsList from '../organisms/MonthlyCalendarsList'
 type CalendarDatesProp = CalendarDataProps['calendarDates']
 
 type MonthlyCalendarProps = {
@@ -23,9 +22,9 @@ const MonthlyCalendar = ({
 
   return (
     <div>
-      <CalendarsList
+      <MonthlyCalendarsList
         calendarDays={calendarDates}
-        calendarType="month"
+
         scheduledLists={scheduledLists}
         setScheduledLists={setScheduledLists}
       />

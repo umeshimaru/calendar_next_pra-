@@ -1,9 +1,11 @@
-import CalendarsList from '../organisms/CalendarsList'
 import {
   useCalendarDays,
   type CalendarDataProps,
 } from '@/hooks/useCalendarDays'
-import { ScheduledTodo } from '../organisms/CalendarsList'
+import { ScheduledTodo } from '@/contexts/ScheduledListContext'
+import WeeklyCalendarsList from '../organisms/WeeklyCalendarsList'
+
+
 
 type CalendarDatesProp = CalendarDataProps['calendarDates']
 
@@ -22,12 +24,11 @@ const WeeklyCalendar = ({
     useCalendarDays()
   return (
     <div>
-      <CalendarsList
-        calendarDays={calendarDates}
-        calendarType="week"
-        scheduledLists={scheduledLists}
-        setScheduledLists={setScheduledLists}
-      />
+    <WeeklyCalendarsList
+      calendarDays={calendarDates}
+      scheduledLists={scheduledLists}
+      setScheduledLists={setScheduledLists}
+    />
     </div>
   )
 }
